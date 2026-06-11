@@ -1,37 +1,44 @@
 <!-- eslint-disable vue/multi-word-component-names -->
 <template>
   <div>
-    <nav class="flex items-center justify-between bg-black text-white p-4">
-      <div class="text-xl md:text-3xl font-bold">Brown Dust 2 L2D Viewer</div>
-      <div class="hidden md:flex items-center gap-4">
-        <button class="cursor-pointer" @click="showUploadModal = true" title="Upload custom Spine model">
-          <PlusIcon class="w-5 h-5 md:w-7 md:h-7" />
+    <nav class="flex items-center justify-between bg-black text-white px-3 lg:px-4 h-[44px] lg:h-[52px] border-b border-white/[0.06]">
+      <!-- Brand (abbreviated on mobile) -->
+      <div class="text-base lg:text-xl font-bold tracking-tight flex items-center gap-1.5">
+        <span class="text-amber-400 hidden sm:inline">⬡</span>
+        <span class="hidden sm:inline">BD2 Viewer</span>
+        <span class="sm:hidden text-sm">BD2 L2D</span>
+      </div>
+
+      <!-- Desktop actions -->
+      <div class="hidden md:flex items-center gap-3">
+        <button class="cursor-pointer text-gray-400 hover:text-white transition-colors" @click="showUploadModal = true" title="Upload custom Spine model">
+          <PlusIcon class="w-5 h-5" />
         </button>
         <button
-          class="cursor-pointer"
+          class="cursor-pointer text-gray-400 hover:text-white transition-colors"
           @click="openBackgroundModal(false)"
           aria-label="Upload background"
           title="Upload background image"
         >
-          <BgUploadIcon class="w-5 h-5 md:w-7 md:h-7" />
+          <BgUploadIcon class="w-5 h-5" />
         </button>
         <button
           v-if="hasCustomBackground"
-          class="cursor-pointer opacity-70 hover:opacity-100 transition"
+          class="cursor-pointer text-gray-400 hover:text-white transition-colors"
           @click="resetBackground"
           aria-label="Reset background"
           title="Reset background image"
         >
-          <BgResetIcon class="w-5 h-5 md:w-7 md:h-7" />
+          <BgResetIcon class="w-5 h-5" />
         </button>
         <a
           href="https://ko-fi.com/jelosus1"
           target="_blank"
           rel="noopener"
-          class="relative"
+          class="relative text-gray-400 hover:text-white transition-colors"
           title="Support on Ko-fi"
         >
-          <KoFiIcon class="w-5 h-5 md:w-7 md:h-7" />
+          <KoFiIcon class="w-5 h-5" />
           <div
             v-if="showKofiTooltip"
             :class="[
@@ -47,19 +54,22 @@
           href="https://www.patreon.com/cw/jelosus1"
           target="_blank"
           rel="noopener"
+          class="text-gray-400 hover:text-white transition-colors"
           title="Support on Patreon"
         >
-          <PatreonIcon class="w-5 h-5 md:w-7 md:h-7" />
+          <PatreonIcon class="w-5 h-5" />
         </a>
-        <button class="cursor-pointer" @click="showChangelog = true" title="Changelog">
-          <ChangelogIcon class="w-5 h-5 md:w-7 md:h-7" />
+        <button class="cursor-pointer text-gray-400 hover:text-white transition-colors" @click="showChangelog = true" title="Changelog">
+          <ChangelogIcon class="w-5 h-5" />
         </button>
-        <a href="https://github.com/Jelosus2/BD2-L2D-Viewer" target="_blank" title="Open GitHub repository">
-          <GithubIcon class="w-5 h-5 md:w-7 md:h-7" />
+        <a href="https://github.com/Jelosus2/BD2-L2D-Viewer" target="_blank" class="text-gray-400 hover:text-white transition-colors" title="Open GitHub repository">
+          <GithubIcon class="w-5 h-5" />
         </a>
       </div>
+
+      <!-- Mobile hamburger -->
       <button
-        class="md:hidden cursor-pointer"
+        class="md:hidden cursor-pointer text-gray-400 hover:text-white transition-colors p-1"
         @click="openMobileMenu()"
         aria-label="Menu"
       >
@@ -67,91 +77,44 @@
       </button>
     </nav>
 
-    <div
-      v-if="mobileMenuOpen"
-      ref="mobileMenu"
-      tabindex="-1"
-      class="fixed inset-0 z-50 md:hidden bg-black bg-opacity-50"
-    >
-      <button
-        class="absolute top-2 right-4 text-xl"
-        @click="closeMobileMenu"
-        aria-label="Close menu"
-      >
-        ✕
-      </button>
+    <!-- Mobile slide-out menu -->
+    <Transition name="mobile-menu">
       <div
-        class="bg-black text-white w-60 p-4 flex flex-col gap-4 h-full"
+        v-if="mobileMenuOpen"
+        ref="mobileMenu"
+        tabindex="-1"
+        class="fixed inset-0 z-50 md:hidden"
       >
-        <button
-          class="flex items-center gap-2"
-          @click="() => { showUploadModal = true; closeMobileMenu(); }"
-        >
-          <PlusIcon class="w-5 h-5" />
-          <span>Upload</span>
-        </button>
-        <button
-          class="flex items-center gap-2"
-          @click="openBackgroundModal(true)"
-        >
-          <BgUploadIcon class="w-5 h-5" />
-          <span>Upload Background</span>
-        </button>
-        <button
-          v-if="hasCustomBackground"
-          class="flex items-center gap-2"
-          @click="() => { resetBackground(); closeMobileMenu(); }"
-        >
-          <BgResetIcon class="w-5 h-5 opacity-60" />
-          <span>Reset Background</span>
-        </button>
-        <button
-          class="flex items-center gap-2"
-          @click="() => { showChangelog = true; closeMobileMenu(); }"
-        >
-          <ChangelogIcon class="w-5 h-5" />
-          <span>Changelog</span>
-        </button>
-        <a
-          href="https://github.com/Jelosus2/BD2-L2D-Viewer"
-          target="_blank"
-          rel="noopener"
-          class="flex items-center gap-2"
-          @click="closeMobileMenu"
-        >
-          <GithubIcon class="w-5 h-5" />
-          <span>GitHub</span>
-        </a>
-        <a
-          href="https://ko-fi.com/jelosus1"
-          target="_blank"
-          rel="noopener"
-          class="relative flex items-center gap-2"
-          @click="closeMobileMenu"
-        >
-          <KoFiIcon class="w-5 h-5" />
-          <span>Ko-fi</span>
-          <span
-            v-if="showMobileKofiTip"
-            :class="[
-              'ml-2 text-xs bg-red-600 text-white rounded px-2 py-0.5 transition-opacity duration-500',
-              mobileKofiTipHidden ? 'opacity-0' : 'opacity-100'
-            ]"
-            >Support!</span
-          >
-        </a>
-        <a
-          href="https://www.patreon.com/cw/jelosus1"
-          target="_blank"
-          rel="noopener"
-          class="flex items-center gap-2"
-          @click="closeMobileMenu"
-        >
-          <PatreonIcon class="w-5 h-5" />
-          <span>Patreon</span>
-        </a>
+        <div class="absolute inset-0 bg-black/60 backdrop-blur-sm" @click="closeMobileMenu" />
+        <div class="absolute right-0 top-0 bottom-0 w-64 bg-[#0d0d14] border-l border-white/[0.06] flex flex-col shadow-2xl shadow-black/50">
+          <div class="flex items-center justify-between px-4 py-3 border-b border-white/[0.06]">
+            <span class="text-sm font-semibold text-gray-400">Menu</span>
+            <button class="text-gray-400 hover:text-white text-lg" @click="closeMobileMenu" aria-label="Close menu">✕</button>
+          </div>
+          <div class="flex-1 flex flex-col gap-0.5 px-2 py-3">
+            <button class="flex items-center gap-3 px-3 py-3 rounded-xl hover:bg-white/[0.04] transition-colors text-sm text-gray-300" @click="() => { showUploadModal = true; closeMobileMenu() }">
+              <PlusIcon class="w-4 h-4 text-amber-400/80" /><span>Upload Spine</span>
+            </button>
+            <button class="flex items-center gap-3 px-3 py-3 rounded-xl hover:bg-white/[0.04] transition-colors text-sm text-gray-300" @click="openBackgroundModal(true)">
+              <BgUploadIcon class="w-4 h-4 text-amber-400/80" /><span>Upload Background</span>
+            </button>
+            <button v-if="hasCustomBackground" class="flex items-center gap-3 px-3 py-3 rounded-xl hover:bg-white/[0.04] transition-colors text-sm text-gray-300" @click="() => { resetBackground(); closeMobileMenu() }">
+              <BgResetIcon class="w-4 h-4 text-amber-400/80" /><span>Reset Background</span>
+            </button>
+            <div class="border-t border-white/[0.06] my-2" />
+            <button class="flex items-center gap-3 px-3 py-3 rounded-xl hover:bg-white/[0.04] transition-colors text-sm text-gray-300" @click="() => { showChangelog = true; closeMobileMenu() }">
+              <ChangelogIcon class="w-4 h-4 text-amber-400/80" /><span>Changelog</span>
+            </button>
+            <a href="https://github.com/Jelosus2/BD2-L2D-Viewer" target="_blank" rel="noopener" class="flex items-center gap-3 px-3 py-3 rounded-xl hover:bg-white/[0.04] transition-colors text-sm text-gray-300" @click="closeMobileMenu">
+              <GithubIcon class="w-4 h-4 text-amber-400/80" /><span>GitHub</span>
+            </a>
+            <a href="https://ko-fi.com/jelosus1" target="_blank" rel="noopener" class="relative flex items-center gap-3 px-3 py-3 rounded-xl hover:bg-white/[0.04] transition-colors text-sm text-gray-300" @click="closeMobileMenu">
+              <KoFiIcon class="w-4 h-4 text-amber-400/80" /><span>Support</span>
+            </a>
+          </div>
+        </div>
       </div>
-    </div>
+    </Transition>
 
     <UploadSpineModal v-if="showUploadModal" @close="showUploadModal = false" />
     <ChangelogModal v-if="showChangelog" @close="showChangelog = false" />
@@ -166,7 +129,7 @@
 </template>
 
 <script setup lang="ts">
-import { ref, onMounted, computed, watch } from 'vue'
+import { ref, computed, watch, onMounted } from 'vue'
 import ChangelogModal from '@/components/ChangelogModal.vue'
 import UploadSpineModal from '@/components/UploadSpineModal.vue'
 import UploadBackgroundModal from '@/components/UploadBackgroundModal.vue'
@@ -190,12 +153,7 @@ const showKofiTooltip = ref(false)
 const kofiTooltipHidden = ref(false)
 const mobileMenuOpen = ref(false)
 const mobileMenu = ref<HTMLElement | null>(null)
-const showMobileKofiTip = ref(false)
-const mobileKofiTipHidden = ref(false)
 let closeMenuAfterBgUpload = false
-
-let mobileTipTimer: number | undefined
-let mobileTipHideTimer: number | undefined
 
 const emit = defineEmits<{
   (e: 'mobile-menu', open: boolean): void
@@ -206,38 +164,16 @@ const emit = defineEmits<{
 const openMobileMenu = () => {
   mobileMenuOpen.value = true
   emit('mobile-menu', true)
-  if (!localStorage.getItem('kofiPromptSeen') && !mobileTipTimer) {
-    showMobileKofiTip.value = true
-    mobileTipTimer = window.setTimeout(() => {
-      mobileKofiTipHidden.value = true
-      mobileTipHideTimer = window.setTimeout(() => {
-        showMobileKofiTip.value = false
-        localStorage.setItem('kofiPromptSeen', '1')
-      }, 500)
-    }, 5000)
-  }
 }
 
 const closeMobileMenu = () => {
   mobileMenuOpen.value = false
   emit('mobile-menu', false)
-  if (mobileTipTimer) {
-    clearTimeout(mobileTipTimer)
-    mobileTipTimer = undefined
-  }
-  if (mobileTipHideTimer) {
-    clearTimeout(mobileTipHideTimer)
-    mobileTipHideTimer = undefined
-  }
-  mobileKofiTipHidden.value = false
-  showMobileKofiTip.value = false
 }
 
 const openBackgroundModal = (fromMobile: boolean) => {
   closeMenuAfterBgUpload = fromMobile
-  if (fromMobile && mobileMenuOpen.value) {
-    closeMobileMenu()
-  }
+  if (fromMobile && mobileMenuOpen.value) closeMobileMenu()
   showBackgroundModal.value = true
 }
 
@@ -245,18 +181,12 @@ const resetBackground = () => {
   closeMenuAfterBgUpload = false
   emit('upload-bg', null)
   showBackgroundModal.value = false
-  if (mobileMenuOpen.value) {
-    closeMobileMenu()
-  }
+  if (mobileMenuOpen.value) closeMobileMenu()
 }
 
 const handleBackgroundUpload = (dataUrl: string | null) => {
-  if (dataUrl) {
-    emit('upload-bg', dataUrl)
-  }
-  if (closeMenuAfterBgUpload && mobileMenuOpen.value) {
-    closeMobileMenu()
-  }
+  if (dataUrl) emit('upload-bg', dataUrl)
+  if (closeMenuAfterBgUpload && mobileMenuOpen.value) closeMobileMenu()
   closeMenuAfterBgUpload = false
   showBackgroundModal.value = false
 }
@@ -290,8 +220,9 @@ onMounted(() => {
 })
 </script>
 
-
-
-
-
-
+<style scoped>
+.mobile-menu-enter-active { transition: all 0.3s cubic-bezier(0.32, 0.72, 0, 1); }
+.mobile-menu-leave-active { transition: all 0.2s ease-in; }
+.mobile-menu-enter-from,
+.mobile-menu-leave-to { opacity: 0; }
+</style>

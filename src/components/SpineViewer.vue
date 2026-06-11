@@ -1,9 +1,10 @@
 <template>
   <div class="relative w-full h-full">
+    <!-- Desktop toolbar: bg edit, dating toggle, layer select, zoom -->
     <div
       ref="toolbarRef"
-      class="absolute left-2 top-16 lg:top-2 flex flex-col gap-2 pointer-events-auto transition-opacity duration-150"
-      :class="[showingMobileOverlay ? 'opacity-0 pointer-events-none' : 'opacity-100 z-40']"
+      class="absolute left-2 top-2 flex flex-col gap-1.5 pointer-events-auto transition-opacity duration-150 z-40"
+      :class="[showingMobileOverlay ? 'opacity-0 pointer-events-none' : 'opacity-100']"
     >
       <button
         ref="editToggleRef"
@@ -13,35 +14,36 @@
         :disabled="!hasBackgroundImage"
         v-show="hasBackgroundImage"
         :class="editButtonClasses"
+        class="w-8 h-8 p-1.5 rounded-lg flex items-center justify-center text-white transition-colors"
       >
         <BgEditIcon />
       </button>
-      <div class="flex flex-row gap-2">
+      <div class="flex flex-row gap-1.5">
         <button
           ref="datingToggleRef"
           v-show="store.characters.find(c => c.id === store.selectedCharacterId)?.datingHasNoBg && store.animationCategory === 'dating'"
           @click="store.showDatingBg = !store.showDatingBg"
-          class="w-8 h-8 p-1.5 rounded-md hidden lg:flex items-center justify-center bg-gray-800/70 hover:bg-gray-700/70 text-white transition-colors"
+          class="w-8 h-8 p-1.5 rounded-lg hidden lg:flex items-center justify-center bg-white/[0.06] hover:bg-white/[0.12] text-gray-300 transition-colors backdrop-blur-sm"
         >
           <BgToggleIcon :active="store.showDatingBg" />
         </button>
         <button
           @click="store.layerSelectionEnabled = !store.layerSelectionEnabled"
-          class="w-8 h-8 p-1.5 rounded-md hidden lg:flex items-center justify-center bg-gray-800/70 hover:bg-gray-700/70 text-white transition-colors"
+          class="w-8 h-8 p-1.5 rounded-lg hidden lg:flex items-center justify-center bg-white/[0.06] hover:bg-white/[0.12] text-gray-300 transition-colors backdrop-blur-sm"
         >
           <LayerSelectIcon :active="store.layerSelectionEnabled" />
         </button>
         <button
           aria-label="Zoom out"
           @click="zoomOut"
-          class="w-8 h-8 p-1.5 rounded-md hidden lg:flex items-center justify-center bg-gray-800/70 hover:bg-gray-700/70 text-white transition-colors"
+          class="w-8 h-8 p-1.5 rounded-lg hidden lg:flex items-center justify-center bg-white/[0.06] hover:bg-white/[0.12] text-gray-300 transition-colors backdrop-blur-sm"
         >
           <MinusIcon />
         </button>
         <button
           aria-label="Zoom in"
           @click="zoomIn"
-          class="w-8 h-8 p-1.5 rounded-md hidden lg:flex items-center justify-center bg-gray-800/70 hover:bg-gray-700/70 text-white transition-colors"
+          class="w-8 h-8 p-1.5 rounded-lg hidden lg:flex items-center justify-center bg-white/[0.06] hover:bg-white/[0.12] text-gray-300 transition-colors backdrop-blur-sm"
         >
           <PlusIcon />
         </button>
@@ -84,12 +86,7 @@
       <div ref="container" class="absolute inset-0 z-10" @pointerdown="onViewerPointerDown"></div>
       <canvas ref="overlayCanvas" class="absolute inset-0 z-20 pointer-events-none"></canvas>
     </div>
-    <div
-      v-if="store.selectedLayerName"
-      class="absolute bottom-6 left-1/2 -translate-x-1/2 bg-gray-900/80 text-white px-4 py-3 rounded-full z-50 pointer-events-none shadow-lg shadow-black/50 text-sm border border-gray-700 backdrop-blur-sm transition-opacity"
-    >
-      Selected Layer: <span class="font-bold text-indigo-400">{{ store.selectedLayerName }}</span>
-    </div>
+    <!-- Seek bar — moved up on mobile to not clash with bottom toolbar -->
     <input
       type="range"
       min="0"
@@ -99,7 +96,8 @@
       @input="seek"
       v-show="!showingMobileOverlay"
       :disabled="showingMobileOverlay"
-      class="seek-range absolute bottom-0 left-0 w-full z-30"
+      class="seek-range absolute left-0 w-full z-40 bottom-20 lg:bottom-0 h-6"
+      :class="showingMobileOverlay ? '' : ''"
     />
   </div>
 </template>
@@ -267,12 +265,12 @@ const backgroundWrapperClasses = computed(() => {
 })
 
 const editButtonClasses = computed(() => [
-  'w-8 h-8 p-1.5 rounded-md flex items-center justify-center text-white transition-colors transition-opacity',
+  'w-8 h-8 p-1.5 rounded-lg flex items-center justify-center text-white transition-colors',
   !hasBackgroundImage.value
     ? 'opacity-60 cursor-not-allowed'
     : editingBackground.value
-      ? 'lg:bg-indigo-600/90 lg:hover:bg-indigo-500'
-      : 'lg:bg-gray-800/80 lg:hover:bg-gray-700/80',
+      ? 'bg-amber-500/30 hover:bg-amber-500/40 text-amber-200'
+      : 'bg-white/[0.06] hover:bg-white/[0.12] text-gray-300',
 ])
 
 let player: SpinePlayer | null = null
@@ -2744,34 +2742,6 @@ function exportAnimationFrames(transparent: boolean): Promise<void> {
 defineExpose({ resetCamera, zoomIn, zoomOut, saveScreenshot, exportAnimation, exportAnimationFrames })
 </script>
 <style scoped>
-.seek-range {
-  -webkit-appearance: none;
-  appearance: none;
-  height: 4px;
-  border-radius: 2px;
-  background-color: rgba(255, 255, 255, 0.5);
-  cursor: pointer;
-}
-.seek-range:disabled {
-  pointer-events: none;
-}
-.seek-range::-webkit-slider-thumb {
-  -webkit-appearance: none;
-  appearance: none;
-  width: 12px;
-  height: 12px;
-  border-radius: 50%;
-  background: white;
-  border: 1px solid #6b7280;
-}
-.seek-range::-moz-range-thumb {
-  width: 12px;
-  height: 12px;
-  border-radius: 50%;
-  background: white;
-  border: 1px solid #6b7280;
-}
-
 .bg-editable {
   position: absolute;
   user-select: none;
